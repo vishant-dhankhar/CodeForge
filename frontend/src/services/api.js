@@ -1,4 +1,6 @@
-const API_BASE = '/api/v1';
+const API_BASE = import.meta.env.VITE_API_BASE_URL
+  ? `${import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '')}/api/v1`
+  : '/api/v1';
 
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('codeforge_token');
