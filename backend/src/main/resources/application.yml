@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: codeforge-backend
+  profiles:
+    active: local
+  jpa:
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+  data:
+    redis:
+      timeout: 200ms
+
+
+server:
+  port: 8080
+
+app:
+  jwt:
+    # 256-bit secret key (HMAC-SHA256)
+    secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+    expiration-ms: 86400000 # 24 hours
+
+logging:
+  level:
+    root: INFO
+    com.codeforge: DEBUG
