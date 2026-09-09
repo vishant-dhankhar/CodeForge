@@ -1,0 +1,160 @@
+// Prisma Schema for CodeForge Distributed Online Judge Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Language {
+  JAVA
+  CPP
+}
+
+enum SubmissionStatus {
+  PENDING
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum Verdict {
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  COMPILATION_ERROR
+  RUNTIME_ERROR
+  INTERNAL_ERROR
+}
+
+model User {
+  id           BigInt        @id @default(autoincrement())
+  username     String        @unique @db.VarChar(50)
+  email        String        @unique @db.VarChar(255)
+  passwordHash String        @map("password_hash") @db.VarChar(255)
+  role         Role          @default(USER)
+  isActive     Boolean       @default(true) @map("is_active")
+  createdAt    DateTime      @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt    DateTime      @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  stats        UserStats?
+  submissions  Submission[]
+
+  @@index([username])
+  @@index([email])
+  @@map("users")
+}
+
+model UserStats {
+  userId              BigInt   @id @map("user_id")
+  easySolved          Int      @default(0) @map("easy_solved")
+  mediumSolved        Int      @default(0) @map("medium_solved")
+  hardSolved          Int      @default(0) @map("hard_solved")
+  totalSubmissions    Int      @default(0) @map("total_submissions")
+  acceptedSubmissions Int      @default(0) @map("accepted_submissions")
+  updatedAt           DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_stats")
+}
+
+model Problem {
+  id            BigInt            @id @default(autoincrement())
+  slug          String            @unique @db.VarChar(120)
+  title         String            @db.VarChar(200)
+  description   String            @db.Text
+  difficulty    Difficulty
+  timeLimitMs   Int               @default(1000) @map("time_limit_ms")
+  memoryLimitMb Int               @default(256) @map("memory_limit_mb")
+  isPublished   Boolean           @default(true) @map("is_published")
+  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt     DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  tags        ProblemTag[]
+  testCases   ProblemTestCase[]
+  submissions Submission[]
+
+  @@index([slug])
+  @@index([difficulty])
+  @@index([isPublished])
+  @@map("problems")
+}
+
+model Tag {
+  id   BigInt @id @default(autoincrement())
+  name String @unique @db.VarChar(50)
+  slug String @unique @db.VarChar(60)
+
+  problems ProblemTag[]
+
+  @@map("tags")
+}
+
+model ProblemTag {
+  problemId BigInt @map("problem_id")
+  tagId     BigInt @map("tag_id")
+
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([problemId, tagId])
+  @@map("problem_tags")
+}
+
+model ProblemTestCase {
+  id             BigInt   @id @default(autoincrement())
+  problemId      BigInt   @map("problem_id")
+  inputData      String   @map("input_data") @db.Text
+  expectedOutput String   @map("expected_output") @db.Text
+  isSample       Boolean  @default(false) @map("is_sample")
+  explanation    String?  @db.Text
+  orderIndex     Int      @default(0) @map("order_index")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([problemId])
+  @@map("problem_test_cases")
+}
+
+model Submission {
+  id              BigInt           @id @default(autoincrement())
+  userId          BigInt           @map("user_id")
+  problemId       BigInt           @map("problem_id")
+  language        Language
+  sourceCode      String           @map("source_code") @db.Text
+  status          SubmissionStatus @default(PENDING)
+  verdict         Verdict?
+  executionTimeMs Int?             @map("execution_time_ms")
+  memoryUsedKb    Int?             @map("memory_used_kb")
+  errorOutput     String?          @map("error_output") @db.Text
+  createdAt       DateTime         @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime         @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([problemId])
+  @@index([status])
+  @@index([createdAt(sort: Desc)])
+  @@index([userId, problemId, createdAt(sort: Desc)])
+  @@map("submissions")
+}
