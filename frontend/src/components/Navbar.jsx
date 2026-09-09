@@ -14,16 +14,17 @@ export function Navbar({ onOpenAuth, onNavigate, currentView }) {
           onClick={() => onNavigate('problems')}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-[1px] shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-all">
-            <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-[1.5px] shadow-lg shadow-amber-500/30 group-hover:shadow-amber-400/50 transition-all">
+            <div className="w-full h-full bg-slate-900 rounded-[9.5px] flex items-center justify-center">
               <Terminal className="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" />
             </div>
           </div>
           <div>
-            <div className="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              Code<span className="text-amber-400 font-extrabold">Forge</span>
+            <div className="text-xl font-black tracking-tight text-white flex items-center leading-none">
+              <span>Code</span>
+              <span className="text-amber-400 font-black drop-shadow-[0_0_10px_rgba(250,204,21,0.4)]">Forge</span>
             </div>
-            <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold -mt-1">Online Judge</div>
+            <div className="text-[10px] text-amber-400/90 uppercase tracking-[0.2em] font-bold mt-1">Online Judge</div>
           </div>
         </div>
 
