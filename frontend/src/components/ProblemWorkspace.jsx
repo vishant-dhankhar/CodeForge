@@ -274,7 +274,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
           <select
             value={language}
             onChange={(e) => handleLanguageChange(e.target.value)}
-            className="bg-slate-900 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-sky-500 cursor-pointer"
+            className="bg-slate-900 border border-slate-800 text-slate-200 text-xs font-medium rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-amber-400 cursor-pointer"
           >
             <option value="JAVA">Java 21 (OpenJDK)</option>
             <option value="CPP">C++ 17 (g++)</option>
@@ -293,7 +293,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-semibold text-xs shadow-md shadow-emerald-500/20 flex items-center gap-1.5 transition-all disabled:opacity-50"
+            className="px-4 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold text-xs shadow-md shadow-amber-500/20 flex items-center gap-1.5 transition-all disabled:opacity-50"
           >
             {isSubmitting ? (
               <>
@@ -320,7 +320,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
               onClick={() => setActiveTab('statement')}
               className={`py-2.5 px-3 text-xs font-semibold flex items-center gap-1.5 transition-colors border-b-2 ${
                 activeTab === 'statement'
-                  ? 'border-sky-400 text-sky-400'
+                  ? 'border-amber-400 text-amber-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -330,7 +330,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
               onClick={() => setActiveTab('submissions')}
               className={`py-2.5 px-3 text-xs font-semibold flex items-center gap-1.5 transition-colors border-b-2 ${
                 activeTab === 'submissions'
-                  ? 'border-sky-400 text-sky-400'
+                  ? 'border-amber-400 text-amber-400'
                   : 'border-transparent text-slate-400 hover:text-slate-200'
               }`}
             >
@@ -345,7 +345,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
                 {/* Limits Banner */}
                 <div className="flex items-center gap-4 text-xs font-mono text-slate-400 p-3 rounded-xl bg-slate-900/60 border border-slate-800/60">
                   <span className="flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-sky-400" /> Time Limit: {problem.timeLimitMs}ms
+                    <Clock className="w-3.5 h-3.5 text-amber-400" /> Time Limit: {problem.timeLimitMs}ms
                   </span>
                   <span className="text-slate-700">|</span>
                   <span className="flex items-center gap-1.5">
@@ -420,14 +420,36 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
         </div>
 
         {/* Right Panel: Monaco Editor + Live Verdict Drawer */}
-        <div className="w-full md:w-1/2 flex flex-col bg-[#1e1e1e] overflow-hidden">
+        <div className="w-full md:w-1/2 flex flex-col bg-[#161613] overflow-hidden">
           
           {/* Monaco Editor Container */}
           <div className="flex-1 overflow-hidden relative">
             <Editor
               height="100%"
               language={language.toLowerCase() === 'cpp' ? 'cpp' : 'java'}
-              theme="vs-dark"
+              theme="warm-honey-dark"
+              beforeMount={(monaco) => {
+                monaco.editor.defineTheme('warm-honey-dark', {
+                  base: 'vs-dark',
+                  inherit: true,
+                  rules: [
+                    { token: 'comment', foreground: '737367', fontStyle: 'italic' },
+                    { token: 'keyword', foreground: 'eab308', fontStyle: 'bold' },
+                    { token: 'string', foreground: '34d399' },
+                    { token: 'number', foreground: 'f59e0b' },
+                    { token: 'type', foreground: 'facc15' },
+                  ],
+                  colors: {
+                    'editor.background': '#161613',
+                    'editor.foreground': '#f5f5f0',
+                    'editorCursor.foreground': '#facc15',
+                    'editor.lineHighlightBackground': '#22221d',
+                    'editorLineNumber.foreground': '#52524a',
+                    'editorLineNumber.activeForeground': '#facc15',
+                    'editor.selectionBackground': '#3a341c',
+                  },
+                });
+              }}
               value={code}
               onChange={(value) => setCode(value || '')}
               options={{
@@ -447,7 +469,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
             <div className="h-44 border-t border-slate-800 bg-slate-950 p-4 flex flex-col justify-between shrink-0 shadow-2xl animate-fade-in">
               <div className="flex items-center justify-between border-b border-slate-800/80 pb-2">
                 <div className="flex items-center gap-2">
-                  <Terminal className="w-4 h-4 text-sky-400" />
+                  <Terminal className="w-4 h-4 text-amber-400" />
                   <span className="text-xs font-bold text-slate-200 uppercase tracking-wider">Evaluation Console</span>
                 </div>
                 {activeSubmission && (
@@ -460,7 +482,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
               {/* Status Display */}
               <div className="my-auto">
                 {isSubmitting && activeSubmission?.status !== 'COMPLETED' ? (
-                  <div className="flex items-center gap-3 text-sky-400">
+                  <div className="flex items-center gap-3 text-amber-400">
                     <Loader2 className="w-5 h-5 animate-spin" />
                     <div>
                       <div className="text-sm font-bold">

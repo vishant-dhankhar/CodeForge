@@ -14,14 +14,14 @@ export function Navbar({ onOpenAuth, onNavigate, currentView }) {
           onClick={() => onNavigate('problems')}
           className="flex items-center gap-3 cursor-pointer group"
         >
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 via-cyan-500 to-indigo-600 p-[1px] shadow-lg shadow-sky-500/20 group-hover:shadow-sky-500/40 transition-all">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 via-yellow-400 to-amber-600 p-[1px] shadow-lg shadow-amber-500/20 group-hover:shadow-amber-500/40 transition-all">
             <div className="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center">
-              <Terminal className="w-5 h-5 text-sky-400 group-hover:scale-110 transition-transform" />
+              <Terminal className="w-5 h-5 text-amber-400 group-hover:scale-110 transition-transform" />
             </div>
           </div>
           <div>
             <div className="text-lg font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
-              Code<span className="text-sky-400 font-extrabold">Forge</span>
+              Code<span className="text-amber-400 font-extrabold">Forge</span>
             </div>
             <div className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold -mt-1">Online Judge</div>
           </div>
@@ -33,7 +33,7 @@ export function Navbar({ onOpenAuth, onNavigate, currentView }) {
             onClick={() => onNavigate('problems')}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
               currentView === 'problems' || currentView === 'problem-detail'
-                ? 'bg-slate-800/80 text-sky-400 border border-slate-700/60'
+                ? 'bg-slate-800/80 text-amber-400 border border-slate-700/60'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
             }`}
           >
@@ -74,11 +74,11 @@ export function Navbar({ onOpenAuth, onNavigate, currentView }) {
                 onClick={() => onNavigate('profile')}
                 className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
                   currentView === 'profile'
-                    ? 'bg-sky-500/10 border-sky-500/40 text-sky-400'
+                    ? 'bg-amber-500/10 border-amber-500/40 text-amber-400'
                     : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:bg-slate-800'
                 }`}
               >
-                <UserIcon className="w-4 h-4 text-sky-400" />
+                <UserIcon className="w-4 h-4 text-amber-400" />
                 <span>{currentUser?.username}</span>
               </button>
 
@@ -101,7 +101,7 @@ export function Navbar({ onOpenAuth, onNavigate, currentView }) {
               </button>
               <button
                 onClick={() => onOpenAuth('register')}
-                className="px-4 py-1.5 rounded-lg text-sm font-medium bg-gradient-to-r from-sky-500 to-indigo-600 text-white hover:from-sky-400 hover:to-indigo-500 shadow-md shadow-sky-500/20 transition-all"
+                className="px-4 py-1.5 rounded-lg text-sm font-semibold bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 text-slate-950 hover:from-amber-400 hover:to-yellow-400 shadow-md shadow-amber-500/20 transition-all"
               >
                 Get Started
               </button>

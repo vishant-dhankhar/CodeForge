@@ -53,14 +53,14 @@ export function ProblemList({ onSelectProblem }) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       
       {/* Hero Banner */}
-      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/40 border border-slate-800 p-6 md:p-8 relative overflow-hidden shadow-2xl">
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-sky-500/5 to-transparent pointer-events-none"></div>
+      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-amber-950/20 border border-slate-800 p-6 md:p-8 relative overflow-hidden shadow-2xl">
+        <div className="absolute right-0 top-0 bottom-0 w-1/3 bg-gradient-to-l from-amber-500/10 to-transparent pointer-events-none"></div>
         <div className="max-w-2xl relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-500/10 border border-sky-500/30 text-sky-400 text-xs font-medium mb-3">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-medium mb-3">
             <Sparkles className="w-3.5 h-3.5" /> High-Performance Online Judge Engine
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-            Sharpen your algorithmic skills with <span className="text-sky-400">CodeForge</span>
+            Sharpen your algorithmic skills with <span className="text-amber-400">CodeForge</span>
           </h1>
           <p className="text-slate-400 text-sm mt-2 leading-relaxed">
             Write code in <strong>Java 21</strong> or <strong>C++ 17</strong>, submit to our sandboxed execution engine, and receive instant verdict evaluation with millisecond precision.
@@ -79,7 +79,7 @@ export function ProblemList({ onSelectProblem }) {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search problems by title..."
-            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-sky-500"
+            className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-amber-400"
           />
         </div>
 
@@ -91,7 +91,7 @@ export function ProblemList({ onSelectProblem }) {
               onClick={() => setDifficulty(diff)}
               className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                 difficulty === diff
-                  ? 'bg-sky-500 text-white shadow-md shadow-sky-500/20 font-semibold'
+                  ? 'bg-gradient-to-r from-amber-500 to-yellow-500 text-slate-950 shadow-md shadow-amber-500/20 font-bold'
                   : 'bg-slate-950 text-slate-400 hover:text-slate-200 border border-slate-800/80 hover:border-slate-700'
               }`}
             >
@@ -105,7 +105,7 @@ export function ProblemList({ onSelectProblem }) {
       <div className="rounded-2xl bg-slate-900/40 border border-slate-800/80 overflow-hidden shadow-xl">
         {isLoading ? (
           <div className="py-20 flex flex-col items-center justify-center gap-3 text-slate-400">
-            <Loader2 className="w-8 h-8 animate-spin text-sky-400" />
+            <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
             <span className="text-sm font-medium">Fetching problem catalog...</span>
           </div>
         ) : error ? (
@@ -145,7 +145,7 @@ export function ProblemList({ onSelectProblem }) {
                     <td className="py-4 px-4 text-center font-mono text-xs text-slate-500">
                       {problem.id}
                     </td>
-                    <td className="py-4 px-4 font-medium text-slate-200 group-hover:text-sky-400 transition-colors">
+                    <td className="py-4 px-4 font-medium text-slate-200 group-hover:text-amber-400 transition-colors">
                       {problem.title}
                     </td>
                     <td className="py-4 px-4">
@@ -175,7 +175,7 @@ export function ProblemList({ onSelectProblem }) {
                       </div>
                     </td>
                     <td className="py-4 px-4 text-right">
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-sky-400 group-hover:translate-x-0.5 transition-transform">
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-400 group-hover:translate-x-0.5 transition-transform">
                         Solve <ChevronRight className="w-3.5 h-3.5" />
                       </span>
                     </td>

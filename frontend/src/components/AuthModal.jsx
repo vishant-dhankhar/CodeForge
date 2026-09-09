@@ -54,7 +54,7 @@ export function AuthModal({ isOpen, initialMode = 'login', onClose }) {
             onClick={() => { setMode('login'); setError(null); }}
             className={`pb-2 px-4 text-sm font-semibold transition-colors relative ${
               mode === 'login'
-                ? 'text-sky-400 after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-[2px] after:bg-sky-400'
+                ? 'text-amber-400 after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-[2px] after:bg-amber-400'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -65,7 +65,7 @@ export function AuthModal({ isOpen, initialMode = 'login', onClose }) {
             onClick={() => { setMode('register'); setError(null); }}
             className={`pb-2 px-4 text-sm font-semibold transition-colors relative ${
               mode === 'register'
-                ? 'text-sky-400 after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-[2px] after:bg-sky-400'
+                ? 'text-amber-400 after:absolute after:bottom-[-9px] after:left-0 after:right-0 after:h-[2px] after:bg-amber-400'
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
@@ -93,7 +93,7 @@ export function AuthModal({ isOpen, initialMode = 'login', onClose }) {
                   value={usernameOrEmail}
                   onChange={(e) => setUsernameOrEmail(e.target.value)}
                   placeholder="e.g. alex_coder or alex@example.com"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                 />
               </div>
             </div>
@@ -109,7 +109,7 @@ export function AuthModal({ isOpen, initialMode = 'login', onClose }) {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     placeholder="e.g. alex_coder"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
               </div>
@@ -123,7 +123,7 @@ export function AuthModal({ isOpen, initialMode = 'login', onClose }) {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="alex@example.com"
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
                   />
                 </div>
               </div>
@@ -140,7 +140,7 @@ export function AuthModal({ isOpen, initialMode = 'login', onClose }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3.5 py-2.5 text-sm text-slate-100 placeholder:text-slate-600 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400"
               />
             </div>
           </div>
@@ -148,7 +148,7 @@ export function AuthModal({ isOpen, initialMode = 'login', onClose }) {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white font-medium text-sm shadow-lg shadow-sky-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
+            className="w-full mt-2 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-600 hover:from-amber-400 hover:to-yellow-400 text-slate-950 font-bold text-sm shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2 transition-all disabled:opacity-50"
           >
             {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
             {mode === 'login' ? 'Sign In' : 'Create Account'}

@@ -47,11 +47,11 @@ export function UserProfile({ onNavigate, onSelectProblem }) {
       </button>
 
       {/* User Header Profile Card */}
-      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-indigo-950/40 border border-slate-800 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-slate-900/90 to-amber-950/20 border border-slate-800 p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
         <div className="flex items-center gap-5">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-indigo-600 p-[2px] shadow-lg shadow-sky-500/20">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-600 p-[2px] shadow-lg shadow-amber-500/20">
             <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-              <User className="w-8 h-8 text-sky-400" />
+              <User className="w-8 h-8 text-amber-400" />
             </div>
           </div>
           <div>
@@ -62,7 +62,7 @@ export function UserProfile({ onNavigate, onSelectProblem }) {
                 <Calendar className="w-3.5 h-3.5" /> Joined {profile?.joinedAt ? new Date(profile.joinedAt).toLocaleDateString() : 'Recently'}
               </span>
               <span>•</span>
-              <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-400 font-semibold border border-sky-500/20">
+              <span className="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 font-semibold border border-amber-500/20">
                 {profile?.role || 'USER'}
               </span>
             </div>
@@ -77,7 +77,7 @@ export function UserProfile({ onNavigate, onSelectProblem }) {
           </div>
           <div className="h-10 w-[1px] bg-slate-800"></div>
           <div className="text-center px-4">
-            <div className="text-2xl font-extrabold text-sky-400 font-mono">{stats.acceptanceRate}%</div>
+            <div className="text-2xl font-extrabold text-amber-400 font-mono">{stats.acceptanceRate}%</div>
             <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-0.5">Acceptance Rate</div>
           </div>
         </div>
@@ -120,13 +120,13 @@ export function UserProfile({ onNavigate, onSelectProblem }) {
       {/* Submission History Table */}
       <div className="rounded-2xl bg-slate-900/40 border border-slate-800/80 overflow-hidden shadow-xl space-y-4 p-6">
         <div className="flex items-center gap-2">
-          <History className="w-4 h-4 text-sky-400" />
+          <History className="w-4 h-4 text-amber-400" />
           <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200">Recent Submission History</h2>
         </div>
 
         {isLoadingSubmissions ? (
           <div className="py-12 flex justify-center text-slate-400">
-            <Loader2 className="w-6 h-6 animate-spin text-sky-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
           </div>
         ) : submissions.length === 0 ? (
           <div className="py-12 text-center text-slate-500 text-sm">
@@ -150,7 +150,7 @@ export function UserProfile({ onNavigate, onSelectProblem }) {
                   <tr key={sub.id} className="hover:bg-slate-800/40 transition-colors">
                     <td 
                       onClick={() => onSelectProblem(sub.problemSlug)}
-                      className="py-3.5 px-4 font-sans font-medium text-slate-200 hover:text-sky-400 cursor-pointer transition-colors"
+                      className="py-3.5 px-4 font-sans font-medium text-slate-200 hover:text-amber-400 cursor-pointer transition-colors"
                     >
                       {sub.problemTitle}
                     </td>
