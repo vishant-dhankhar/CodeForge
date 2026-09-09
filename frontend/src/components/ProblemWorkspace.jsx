@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Editor from '@monaco-editor/react';
 import confetti from 'canvas-confetti';
-import { problemsApi, submissionsApi } from '../services/api';
+import { problemsApi, submissionsApi, aiApi } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { 
   ArrowLeft, Play, Clock, Cpu, CheckCircle2, XCircle, AlertTriangle, 
-  RotateCcw, Loader2, Sparkles, Terminal, FileCode2, History 
+  RotateCcw, Loader2, Sparkles, Terminal, FileCode2, History, Bot,
+  Lightbulb, Bug, Zap, Send, MessageSquare
 } from 'lucide-react';
 
 const STARTER_TEMPLATES = {
@@ -30,13 +31,18 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
   const [loadingError, setLoadingError] = useState(null);
   const [language, setLanguage] = useState('JAVA');
   const [code, setCode] = useState(STARTER_TEMPLATES.JAVA);
-  const [activeTab, setActiveTab] = useState('statement'); // 'statement' | 'submissions'
+  const [activeTab, setActiveTab] = useState('statement'); // 'statement' | 'submissions' | 'ai'
   const [problemSubmissions, setProblemSubmissions] = useState([]);
   
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activeSubmission, setActiveSubmission] = useState(null);
   const [pollingError, setPollingError] = useState(null);
+
+  // AI Assistant State
+  const [aiHistory, setAiHistory] = useState([]);
+  const [isLoadingAi, setIsLoadingAi] = useState(false);
+  const [customQuestion, setCustomQuestion] = useState('');
 
   const pollIntervalRef = useRef(null);
 
@@ -89,6 +95,57 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
       setCode(problem.starterCodeJson[newLang]);
     } else {
       setCode(STARTER_TEMPLATES[newLang]);
+    }
+  };
+
+  // Request AI Guidance
+  const handleRequestAiGuidance = async (promptType, questionOverride = null) => {
+    const userText = questionOverride || (
+      promptType === 'HINT' ? 'Give me an algorithmic hint for the approach.' :
+      promptType === 'DEBUG' ? 'Help me debug my failing code and test case.' :
+      promptType === 'OPTIMIZE' ? 'How can I optimize the time and space complexity?' :
+      customQuestion.trim()
+    );
+
+    if (!userText) return;
+
+    setIsLoadingAi(true);
+    setAiHistory((prev) => [...prev, { role: 'user', text: userText, type: promptType }]);
+    if (!questionOverride) setCustomQuestion('');
+
+    try {
+      const res = await aiApi.getAssistantHint({
+        problemSlug: slug,
+        currentCode: code,
+        language,
+        verdict: activeSubmission?.verdict || null,
+        errorOutput: activeSubmission?.errorOutput || null,
+        promptType,
+        userQuestion: userText,
+      });
+
+      if (res.success && res.data) {
+        setAiHistory((prev) => [
+          ...prev,
+          {
+            role: 'assistant',
+            text: res.data.reply,
+            type: promptType,
+            isDemo: res.data.isDemoFallback,
+          },
+        ]);
+      }
+    } catch (err) {
+      setAiHistory((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          text: `⚠️ **AI Service Notice**: ${err.message || 'Unable to connect to AI assistant.'}`,
+          type: promptType,
+        },
+      ]);
+    } finally {
+      setIsLoadingAi(false);
     }
   };
 
@@ -225,7 +282,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
           </button>
           <button
             onClick={loadProblem}
-            className="px-4 py-2 rounded-lg bg-sky-500 text-white text-xs font-semibold hover:bg-sky-400 transition-colors shadow-md shadow-sky-500/20"
+            className="px-4 py-2 rounded-lg bg-amber-500 text-slate-950 text-xs font-bold hover:bg-amber-400 transition-colors shadow-md shadow-amber-500/20"
           >
             Retry
           </button>
@@ -237,7 +294,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
   if (!problem) {
     return (
       <div className="h-[calc(100vh-4rem)] flex items-center justify-center text-slate-400 gap-3">
-        <Loader2 className="w-6 h-6 animate-spin text-sky-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
         <span>Loading problem workspace...</span>
       </div>
     );
@@ -282,7 +339,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
 
           {/* Reset Code */}
           <button
-            onClick={() => setCode(STARTER_TEMPLATES[language])}
+            onClick={() => setCode(problem?.starterCodeJson?.[language] || STARTER_TEMPLATES[language])}
             className="p-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-900 rounded-lg transition-colors"
             title="Reset code template"
           >
@@ -311,7 +368,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
       {/* Split Workspace Area */}
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
         
-        {/* Left Panel: Statement / Submissions */}
+        {/* Left Panel: Statement / Submissions / AI Assistant */}
         <div className="w-full md:w-1/2 border-r border-slate-800/80 flex flex-col bg-slate-950 overflow-hidden">
           
           {/* Tab Selector */}
@@ -336,6 +393,16 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
             >
               <History className="w-3.5 h-3.5" /> Problem Submissions
             </button>
+            <button
+              onClick={() => setActiveTab('ai')}
+              className={`py-2.5 px-3 text-xs font-semibold flex items-center gap-1.5 transition-colors border-b-2 ${
+                activeTab === 'ai'
+                  ? 'border-amber-400 text-amber-400'
+                  : 'border-transparent text-amber-400/80 hover:text-amber-300'
+              }`}
+            >
+              <Bot className="w-3.5 h-3.5 text-amber-400" /> AI Mentor
+            </button>
           </div>
 
           {/* Tab Body */}
@@ -349,7 +416,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
                   </span>
                   <span className="text-slate-700">|</span>
                   <span className="flex items-center gap-1.5">
-                    <Cpu className="w-3.5 h-3.5 text-indigo-400" /> Memory Limit: {problem.memoryLimitMb}MB
+                    <Cpu className="w-3.5 h-3.5 text-amber-400" /> Memory Limit: {problem.memoryLimitMb}MB
                   </span>
                 </div>
 
@@ -367,7 +434,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
                         <div className="text-xs font-semibold text-slate-400">Example {idx + 1}</div>
                         <div>
                           <div className="text-[11px] font-semibold text-slate-500 uppercase">Input:</div>
-                          <pre className="mt-1 p-2.5 rounded-lg bg-slate-950 font-mono text-xs text-sky-300 border border-slate-800/80 overflow-x-auto">
+                          <pre className="mt-1 p-2.5 rounded-lg bg-slate-950 font-mono text-xs text-amber-300 border border-slate-800/80 overflow-x-auto">
                             {tc.inputData}
                           </pre>
                         </div>
@@ -387,7 +454,7 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
                   </div>
                 )}
               </>
-            ) : (
+            ) : activeTab === 'submissions' ? (
               <div className="space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">Recent Submissions for {problem.title}</h3>
                 {problemSubmissions.length === 0 ? (
@@ -414,6 +481,114 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
                     ))}
                   </div>
                 )}
+              </div>
+            ) : (
+              /* AI Mentor Tab */
+              <div className="space-y-5 flex flex-col h-full">
+                
+                {/* AI Banner */}
+                <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-yellow-500/5 to-transparent border border-amber-500/30 flex items-start gap-3">
+                  <Bot className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+                  <div className="text-xs space-y-1">
+                    <div className="font-bold text-amber-300">CodeForge Socratic AI Mentor</div>
+                    <div className="text-slate-400 leading-relaxed">
+                      I help you understand algorithm logic, debug failing test cases, and analyze complexity. <strong>I give hints and guidance, not copy-paste code solutions!</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Action Chips */}
+                <div className="space-y-2">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Quick Assistance Prompts</div>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleRequestAiGuidance('HINT')}
+                      disabled={isLoadingAi}
+                      className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-amber-500/40 text-xs font-semibold text-amber-400 flex items-center gap-1.5 transition-all disabled:opacity-50"
+                    >
+                      <Lightbulb className="w-3.5 h-3.5" /> Algorithm Hint
+                    </button>
+                    <button
+                      onClick={() => handleRequestAiGuidance('DEBUG')}
+                      disabled={isLoadingAi}
+                      className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-rose-500/40 text-xs font-semibold text-rose-400 flex items-center gap-1.5 transition-all disabled:opacity-50"
+                    >
+                      <Bug className="w-3.5 h-3.5" /> Debug Verdict Error
+                    </button>
+                    <button
+                      onClick={() => handleRequestAiGuidance('OPTIMIZE')}
+                      disabled={isLoadingAi}
+                      className="px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 hover:border-emerald-500/40 text-xs font-semibold text-emerald-400 flex items-center gap-1.5 transition-all disabled:opacity-50"
+                    >
+                      <Zap className="w-3.5 h-3.5" /> Optimize Complexity
+                    </button>
+                  </div>
+                </div>
+
+                {/* AI History Feed */}
+                <div className="space-y-3 flex-1 overflow-y-auto">
+                  {aiHistory.length === 0 ? (
+                    <div className="py-12 text-center text-slate-500 text-xs flex flex-col items-center gap-2">
+                      <MessageSquare className="w-6 h-6 text-slate-600" />
+                      <span>Click one of the quick action prompts above or ask a question below to start getting AI guidance.</span>
+                    </div>
+                  ) : (
+                    aiHistory.map((item, idx) => (
+                      <div
+                        key={idx}
+                        className={`p-4 rounded-xl border text-xs leading-relaxed ${
+                          item.role === 'user'
+                            ? 'bg-slate-900 border-slate-800 text-slate-200 ml-6'
+                            : 'bg-slate-900/80 border-amber-500/20 text-slate-300 mr-2 shadow-lg'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-bold flex items-center gap-1.5 text-[11px] text-amber-400">
+                            {item.role === 'user' ? 'You' : '🤖 AI Mentor'}
+                          </span>
+                          {item.isDemo && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 font-mono">Demo Mode</span>
+                          )}
+                        </div>
+                        <div className="whitespace-pre-wrap font-sans">
+                          {item.text}
+                        </div>
+                      </div>
+                    ))
+                  )}
+
+                  {isLoadingAi && (
+                    <div className="p-4 rounded-xl bg-slate-900/80 border border-amber-500/20 text-xs text-amber-400 flex items-center gap-2">
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>AI Mentor is analyzing your code and problem statement...</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Custom Prompt Input */}
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (customQuestion.trim()) handleRequestAiGuidance('CUSTOM');
+                  }}
+                  className="flex items-center gap-2 pt-2 border-t border-slate-800/80 shrink-0"
+                >
+                  <input
+                    type="text"
+                    value={customQuestion}
+                    onChange={(e) => setCustomQuestion(e.target.value)}
+                    placeholder="Ask AI Mentor for a hint or debugging guidance..."
+                    className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-amber-400"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isLoadingAi || !customQuestion.trim()}
+                    className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-1 transition-all disabled:opacity-50 shrink-0"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                  </button>
+                </form>
+
               </div>
             )}
           </div>

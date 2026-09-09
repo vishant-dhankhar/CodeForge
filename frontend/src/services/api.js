@@ -147,3 +147,25 @@ export const submissionsApi = {
       mockService.getProblemSubmissions()
     ),
 };
+
+export const aiApi = {
+  getAssistantHint: (data) =>
+    request(
+      '/ai/assist',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      },
+      () => ({
+        success: true,
+        data: {
+          reply: `### 💡 AI Mentor Hint (Demo Mode)
+
+1. **Approach**: Try storing elements in a HashMap to achieve $O(N)$ lookup.
+2. **Edge Cases**: Make sure to check array bounds and handle negative integers!`,
+          promptType: data.promptType || 'HINT',
+          isDemoFallback: true,
+        },
+      })
+    ),
+};
