@@ -1,0 +1,3 @@
+# GitHub Linguist Language Statistics Overrides
+*.json linguist-detectable=false
+package-lock.json linguist-generated=true
