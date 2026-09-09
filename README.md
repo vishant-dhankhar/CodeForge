@@ -1,8 +1,9 @@
 # ⚔️ CodeForge — Distributed Online Judge & Code Execution Platform
 
 [![React](https://img.shields.io/badge/Frontend-React%2018%20%2B%20Vite-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![Spring Boot](https://img.shields.io/badge/Backend-Spring%20Boot%203-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![Java](https://img.shields.io/badge/Language-Java%2017%2F21-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Node.js](https://img.shields.io/badge/Backend-Node.js%20%2B%20Express-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
+[![JavaScript](https://img.shields.io/badge/Language-JavaScript%20(ESM)-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Prisma](https://img.shields.io/badge/ORM-Prisma-2D3748?logo=prisma&logoColor=white)](https://www.prisma.io/)
 [![Redis](https://img.shields.io/badge/Queue%20%26%20Cache-Redis-DC382D?logo=redis&logoColor=white)](https://redis.io/)
 [![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Vercel](https://img.shields.io/badge/Deployment-Vercel-000000?logo=vercel&logoColor=white)](https://vercel.com/)
@@ -31,9 +32,9 @@ flowchart TD
         UI["Monaco Code Editor & Problem Catalog"]
     end
 
-    subgraph Gateway ["Spring Boot 3 API Server"]
+    subgraph Gateway ["Node.js + Express API Server"]
         RL["Redis Sliding Window Rate Limiter"]
-        Auth["JWT Security & Auth Controller"]
+        Auth["JWT Auth Middleware & Routes"]
         ProblemAPI["Problem Catalog & Management Service"]
         SubAPI["Submission Controller"]
     end
@@ -45,7 +46,7 @@ flowchart TD
     end
 
     subgraph Storage ["Persistence Layer"]
-        DB[("PostgreSQL Database")]
+        DB[("PostgreSQL Database (Prisma ORM)")]
     end
 
     UI -->|HTTPS / REST API| Gateway
@@ -66,12 +67,12 @@ flowchart TD
 | Domain | Technologies |
 | :--- | :--- |
 | **Frontend** | React 18, Vite, Monaco Editor (`@monaco-editor/react`), Lucide Icons, Canvas Confetti |
-| **Backend Framework** | Spring Boot 3, Spring Security, Spring Data JPA / Hibernate |
-| **Languages Supported** | Java 21 (OpenJDK), C++ 17 (`g++`) |
-| **Queue & Caching** | Redis (Sliding Window Rate Limiter & Task Dispatcher) |
-| **Database** | PostgreSQL, Flyway Schema Migrations |
-| **Build Tools** | Maven (Backend), npm / Vite (Frontend) |
-| **Hosting & Deployment**| Vercel (Frontend SPA), Docker / Render / Railway (Backend) |
+| **Backend Framework** | Node.js, Express.js (JavaScript ESM), Zod Validation |
+| **ORM & Database** | Prisma ORM (`@prisma/client`), PostgreSQL |
+| **Code Execution Languages** | Java 21 (`javac`/`java`), C++ 17 (`g++`) |
+| **Queue & Caching** | Redis (`ioredis` Sliding Window Rate Limiter & Async Task Worker) |
+| **Build & Tooling** | `npm` / `node` (Backend), `npm` / `vite` (Frontend) |
+| **Hosting & Deployment**| Vercel (Frontend SPA), Render / Railway / Docker (Backend) |
 
 ---
 
@@ -81,10 +82,9 @@ flowchart TD
 
 Ensure you have the following installed locally:
 - **Node.js**: `v18.x` or higher
-- **Java Development Kit (JDK)**: `17` or `21`
-- **Maven**: `3.8+`
 - **PostgreSQL**: `v14+` running on port `5432`
 - **Redis**: running on port `6379`
+- **Java JDK** (`javac`/`java`) & **C++ Compiler** (`g++`) for local process code execution
 
 ---
 
@@ -98,7 +98,7 @@ CREATE DATABASE codeforge_db;
 
 ---
 
-### 2. Backend Setup (Spring Boot)
+### 2. Backend Setup (Node.js + Express + Prisma)
 
 Navigate to the `backend/` directory:
 
@@ -106,23 +106,36 @@ Navigate to the `backend/` directory:
 cd backend
 ```
 
-Configure your database and Redis credentials in `src/main/resources/application-local.yml` or set environment variables:
+Install dependencies:
 
 ```bash
-export DB_URL=jdbc:postgresql://localhost:5432/codeforge_db
-export DB_USERNAME=postgres
-export DB_PASSWORD=your_password
-export REDIS_HOST=localhost
-export REDIS_PORT=6379
+npm install
 ```
 
-Run Flyway migrations and start the backend application:
+Configure environment variables in `.env`:
+
+```env
+PORT=8080
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/codeforge_db?schema=public"
+REDIS_HOST=localhost
+REDIS_PORT=6379
+JWT_SECRET=your_jwt_secret_key
+```
+
+Run Prisma database migrations and seed initial problem dataset:
 
 ```bash
-./mvnw spring-boot:run
+npx prisma migrate dev --name init
+npx prisma db seed
 ```
 
-The Spring Boot backend will start on **`http://localhost:8080`**.
+Start the backend application in development mode:
+
+```bash
+npm run dev
+```
+
+The Node.js backend will start on **`http://localhost:8080`**.
 
 ---
 
@@ -164,7 +177,7 @@ The `frontend/` directory includes a pre-configured `vercel.json` for single-pag
 3. Set Environment Variable `VITE_API_BASE_URL` to point to your live backend endpoint.
 
 ### Backend (Render / Railway / Docker)
-The Spring Boot application can be deployed using standard Docker containers or Maven build packs on platforms like Render or Railway alongside a managed PostgreSQL database and Redis instance.
+The Node.js backend can be deployed using standard Docker containers or Node buildpacks on platforms like Render or Railway alongside a managed PostgreSQL database and Redis instance.
 
 ---
 
