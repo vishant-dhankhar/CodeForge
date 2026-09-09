@@ -3,7 +3,7 @@ import { PrismaClient, Difficulty } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding database with JavaScript seeder...');
+  console.log('🌱 Seeding database with LeetCode-style starter templates...');
 
   // 1. Seed Tags
   const tagsData = [
@@ -23,18 +23,26 @@ async function main() {
     tagMap.set(tag.slug, createdTag.id);
   }
 
-  // 2. Seed Problem 1: Two Sum
+  // 2. Seed Problem 1: Two Sum (LeetCode function signature style)
+  const twoSumStarterCode = {
+    JAVA: `class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // Write your solution here\n        return new int[]{0, 1};\n    }\n}`,
+    CPP: `class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        // Write your solution here\n        return {0, 1};\n    }\n};`,
+  };
+
   const twoSum = await prisma.problem.upsert({
     where: { slug: 'two-sum' },
-    update: {},
+    update: {
+      starterCodeJson: twoSumStarterCode,
+    },
     create: {
       slug: 'two-sum',
       title: 'Two Sum',
       description:
-        'Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\n### Example 1:\n```\nInput: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: Because nums[0] + nums[1] == 9, we return [0, 1].\n```',
+        'Given an array of integers `nums` and an integer `target`, return indices of the two numbers such that they add up to `target`.\n\nYou may assume that each input would have exactly one solution, and you may not use the same element twice.\n\n### Function Signature:\nImplement the `twoSum` function inside the `Solution` class.\n\n### Example 1:\n```\nInput: nums = [2,7,11,15], target = 9\nOutput: [0,1]\nExplanation: Because nums[0] + nums[1] == 9, we return [0, 1].\n```',
       difficulty: Difficulty.EASY,
       timeLimitMs: 1000,
       memoryLimitMb: 256,
+      starterCodeJson: twoSumStarterCode,
       isPublished: true,
       testCases: {
         create: [
@@ -81,18 +89,26 @@ async function main() {
     });
   }
 
-  // 3. Seed Problem 2: Reverse String
+  // 3. Seed Problem 2: Reverse String (LeetCode function signature style)
+  const reverseStringStarterCode = {
+    JAVA: `class Solution {\n    public String reverseString(String s) {\n        // Write your solution here\n        return new StringBuilder(s).reverse().toString();\n    }\n}`,
+    CPP: `class Solution {\npublic:\n    string reverseString(string s) {\n        // Write your solution here\n        reverse(s.begin(), s.end());\n        return s;\n    }\n};`,
+  };
+
   const reverseString = await prisma.problem.upsert({
     where: { slug: 'reverse-string' },
-    update: {},
+    update: {
+      starterCodeJson: reverseStringStarterCode,
+    },
     create: {
       slug: 'reverse-string',
       title: 'Reverse String',
       description:
-        'Write a function that reverses a string.\n\n### Example 1:\n```\nInput: s = "hello"\nOutput: "olleh"\n```',
+        'Write a function that reverses a string.\n\n### Function Signature:\nImplement the `reverseString` function inside the `Solution` class.\n\n### Example 1:\n```\nInput: s = "hello"\nOutput: "olleh"\n```',
       difficulty: Difficulty.EASY,
       timeLimitMs: 1000,
       memoryLimitMb: 256,
+      starterCodeJson: reverseStringStarterCode,
       isPublished: true,
       testCases: {
         create: [
@@ -139,7 +155,7 @@ async function main() {
     });
   }
 
-  console.log('✅ JavaScript Seeding complete!');
+  console.log('✅ Seeding complete!');
 }
 
 main()

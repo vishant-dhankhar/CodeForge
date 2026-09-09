@@ -9,29 +9,19 @@ import {
 } from 'lucide-react';
 
 const STARTER_TEMPLATES = {
-  JAVA: `import java.util.*;
-
-public class Solution {
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+  JAVA: `class Solution {
+    public int[] twoSum(int[] nums, int target) {
         // Write your solution here
-        
+        return new int[]{0, 1};
     }
 }`,
-  CPP: `#include <iostream>
-#include <vector>
-#include <string>
-#include <algorithm>
-
-using namespace std;
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-    // Write your solution here
-    
-    return 0;
-}`,
+  CPP: `class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // Write your solution here
+        return {0, 1};
+    }
+};`,
 };
 
 export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
@@ -55,7 +45,13 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
     try {
       const res = await problemsApi.getProblemBySlug(slug);
       if (res.success && res.data) {
-        setProblem(res.data);
+        const prob = res.data;
+        setProblem(prob);
+        if (prob.starterCodeJson && prob.starterCodeJson[language]) {
+          setCode(prob.starterCodeJson[language]);
+        } else {
+          setCode(STARTER_TEMPLATES[language]);
+        }
       }
     } catch (err) {
       console.error('Failed to load problem:', err);
@@ -89,7 +85,11 @@ export function ProblemWorkspace({ slug, onBack, onOpenAuth }) {
   // Handle language switch
   const handleLanguageChange = (newLang) => {
     setLanguage(newLang);
-    setCode(STARTER_TEMPLATES[newLang]);
+    if (problem && problem.starterCodeJson && problem.starterCodeJson[newLang]) {
+      setCode(problem.starterCodeJson[newLang]);
+    } else {
+      setCode(STARTER_TEMPLATES[newLang]);
+    }
   };
 
   // Submit code & start polling

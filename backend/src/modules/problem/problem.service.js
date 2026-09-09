@@ -81,6 +81,7 @@ export class ProblemService {
       difficulty: problem.difficulty,
       timeLimitMs: problem.timeLimitMs,
       memoryLimitMb: problem.memoryLimitMb,
+      starterCodeJson: problem.starterCodeJson || null,
       tags: problem.tags.map((pt) => pt.tag.name),
       sampleTestCases: problem.testCases.map((tc) => ({
         id: Number(tc.id),

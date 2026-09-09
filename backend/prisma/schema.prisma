@@ -76,16 +76,17 @@ model UserStats {
 }
 
 model Problem {
-  id            BigInt            @id @default(autoincrement())
-  slug          String            @unique @db.VarChar(120)
-  title         String            @db.VarChar(200)
-  description   String            @db.Text
-  difficulty    Difficulty
-  timeLimitMs   Int               @default(1000) @map("time_limit_ms")
-  memoryLimitMb Int               @default(256) @map("memory_limit_mb")
-  isPublished   Boolean           @default(true) @map("is_published")
-  createdAt     DateTime          @default(now()) @map("created_at") @db.Timestamptz
-  updatedAt     DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
+  id              BigInt            @id @default(autoincrement())
+  slug            String            @unique @db.VarChar(120)
+  title           String            @db.VarChar(200)
+  description     String            @db.Text
+  difficulty      Difficulty
+  timeLimitMs     Int               @default(1000) @map("time_limit_ms")
+  memoryLimitMb   Int               @default(256) @map("memory_limit_mb")
+  starterCodeJson Json?             @map("starter_code_json")
+  isPublished     Boolean           @default(true) @map("is_published")
+  createdAt       DateTime          @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt       DateTime          @default(now()) @updatedAt @map("updated_at") @db.Timestamptz
 
   tags        ProblemTag[]
   testCases   ProblemTestCase[]

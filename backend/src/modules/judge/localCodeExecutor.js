@@ -11,9 +11,14 @@ export class LocalCodeExecutor {
       tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'codeforge_exec_'));
       const isWindows = process.platform === 'win32';
 
-      const fileName = language === Language.JAVA ? 'Solution.java' : 'solution.cpp';
+      const finalCode = this.wrapCodeWithHarness(language, sourceCode);
+      const isJavaRunner = language === Language.JAVA && finalCode.includes('class SolutionRunner');
+
+      const fileName = language === Language.JAVA
+        ? (isJavaRunner ? 'SolutionRunner.java' : 'Solution.java')
+        : 'solution.cpp';
       const sourceFilePath = path.join(tempDir, fileName);
-      await fs.writeFile(sourceFilePath, sourceCode, 'utf-8');
+      await fs.writeFile(sourceFilePath, finalCode, 'utf-8');
 
       // 1. Compilation Phase
       if (language === Language.JAVA) {
@@ -21,7 +26,7 @@ export class LocalCodeExecutor {
           ? path.join(process.env.JAVA_HOME, 'bin', isWindows ? 'javac.exe' : 'javac')
           : 'javac';
 
-        const compileRes = await this.runProcess(javacCmd, ['Solution.java'], tempDir, '', 10000);
+        const compileRes = await this.runProcess(javacCmd, [fileName], tempDir, '', 10000);
         if (compileRes.exitCode !== 0) {
           compileRes.isCompileError = true;
           return compileRes;
@@ -50,7 +55,7 @@ export class LocalCodeExecutor {
         runCmd = process.env.JAVA_HOME
           ? path.join(process.env.JAVA_HOME, 'bin', isWindows ? 'java.exe' : 'java')
           : 'java';
-        runArgs = ['Solution'];
+        runArgs = [isJavaRunner ? 'SolutionRunner' : 'Solution'];
       } else {
         const binaryName = isWindows ? 'solution.exe' : './solution';
         runCmd = path.join(tempDir, binaryName);
@@ -77,6 +82,101 @@ export class LocalCodeExecutor {
         }
       }
     }
+  }
+
+  static wrapCodeWithHarness(language, sourceCode) {
+    const hasMain = sourceCode.includes('main(') || sourceCode.includes('main (');
+    if (hasMain) {
+      return sourceCode;
+    }
+
+    if (language === Language.CPP) {
+      if (sourceCode.includes('twoSum')) {
+        return `#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+${sourceCode}
+
+int main() {
+    int n;
+    if (!(cin >> n)) return 0;
+    vector<int> nums(n);
+    for (int i = 0; i < n; i++) cin >> nums[i];
+    int target;
+    cin >> target;
+
+    Solution solver;
+    vector<int> res = solver.twoSum(nums, target);
+    for (size_t i = 0; i < res.size(); i++) {
+        cout << res[i] << (i + 1 == res.size() ? "" : " ");
+    }
+    cout << endl;
+    return 0;
+}`;
+      } else if (sourceCode.includes('reverseString')) {
+        return `#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+
+${sourceCode}
+
+int main() {
+    string s;
+    if (!(cin >> s)) return 0;
+
+    Solution solver;
+    string res = solver.reverseString(s);
+    cout << res << endl;
+    return 0;
+}`;
+      }
+    } else if (language === Language.JAVA) {
+      if (sourceCode.includes('twoSum')) {
+        return `import java.util.*;
+
+${sourceCode}
+
+public class SolutionRunner {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        if (!sc.hasNextInt()) return;
+        int n = sc.nextInt();
+        int[] nums = new int[n];
+        for (int i = 0; i < n; i++) nums[i] = sc.nextInt();
+        int target = sc.nextInt();
+
+        Solution solver = new Solution();
+        int[] res = solver.twoSum(nums, target);
+        for (int i = 0; i < res.length; i++) {
+            System.out.print(res[i] + (i + 1 == res.length ? "" : " "));
+        }
+        System.out.println();
+    }
+}`;
+      } else if (sourceCode.includes('reverseString')) {
+        return `import java.util.*;
+
+${sourceCode}
+
+public class SolutionRunner {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        if (!sc.hasNext()) return;
+        String s = sc.next();
+
+        Solution solver = new Solution();
+        String res = solver.reverseString(s);
+        System.out.println(res);
+    }
+}`;
+      }
+    }
+
+    return sourceCode;
   }
 
   static runProcess(command, args, cwd, inputData, timeoutMs) {
